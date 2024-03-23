@@ -2,7 +2,7 @@
   "name": "@wsh-2024/client",
   "private": true,
   "scripts": {
-    "build": "pnpm run build:clean && pnpm run build:tsup && pnpm run build:copy",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 pnpm run build:clean && pnpm run build:tsup && pnpm run build:copy",
     "build:clean": "rm -rf ./dist",
     "build:copy": "cp -r ./assets ./dist/assets",
     "build:tsup": "tsup"
