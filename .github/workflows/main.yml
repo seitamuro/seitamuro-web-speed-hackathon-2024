@@ -19,4 +19,4 @@ jobs:
           aws-region: ap-northeast-1
 
       - name: Deploy to AWS CodeDeploy
-        run: aws deploy create-deployment --application-name webspeedhackathon2024 --deployment-group-name CodeDeployGroup --github-location repository="seitamuro/seitamuro-webspeedhackathon2024",commitId="${{ github.sha }}"
+        run: aws deploy create-deployment --application-name webspeedhackathon2024 --deployment-group-name CodeDeployGroup --github-location repository="seitamuro/seitamuro-web-speed-hackathon-2024",commitId="${{ github.sha }}"
