@@ -28,11 +28,13 @@ self.addEventListener('fetch', (ev: FetchEvent) => {
 
 async function onFetch(request: Request): Promise<Response> {
   // キャッシュを参照
-  const cache = await caches.open('images');
-  const cachedResponse = await cache.match(request);
+  if (request.method === 'GET') {
+    const cache = await caches.open('images');
+    const cachedResponse = await cache.match(request);
 
-  if (cachedResponse) {
-    return cachedResponse;
+    if (cachedResponse) {
+      return cachedResponse;
+    }
   }
 
   // サーバーの負荷を分散するために Jitter 処理をいれる
@@ -40,10 +42,15 @@ async function onFetch(request: Request): Promise<Response> {
 
   const res = await fetch(request);
 
-  if (res.headers.get('Content-Type') === 'image/jxl') {
-    const transformed = await transformJpegXLToBmp(res);
-    cache.put(request, transformed);
-    return transformed;
+  if (request.method === 'GET' && res.status === 200) {
+    const cache = await caches.open('images');
+    if (res.headers.get('Content-Type') === 'image/jxl') {
+      const transformed = await transformJpegXLToBmp(res);
+      cache.put(request, transformed);
+      return transformed;
+    }
+
+    cache.put(request, res.clone());
   }
 
   return res;
