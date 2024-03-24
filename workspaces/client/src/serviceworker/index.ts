@@ -27,14 +27,24 @@ self.addEventListener('fetch', (ev: FetchEvent) => {
 });
 
 async function onFetch(request: Request): Promise<Response> {
+  // キャッシュを参照
+  const cache = await caches.open('images');
+  const cachedResponse = await cache.match(request);
+
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
   // サーバーの負荷を分散するために Jitter 処理をいれる
   await jitter();
 
   const res = await fetch(request);
 
   if (res.headers.get('Content-Type') === 'image/jxl') {
-    return transformJpegXLToBmp(res);
-  } else {
-    return res;
+    const transformed = await transformJpegXLToBmp(res);
+    cache.put(request, transformed);
+    return transformed;
   }
+
+  return res;
 }
